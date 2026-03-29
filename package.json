@@ -1,0 +1,11 @@
+{
+  "name": "creatine-tracker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "build:client": "npm run build --prefix client",
+    "build:server": "npm run build --prefix server"
+  }
+}
