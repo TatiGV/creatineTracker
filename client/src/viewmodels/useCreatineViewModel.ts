@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { type CreatineEntry, loadEntries, saveEntry } from '../models/CreatineEntry';
+import { type CreatineEntry, loadEntries, saveEntry, deleteEntry } from '../models/CreatineEntry';
 
 function localDateStr(date: Date): string {
   const y = date.getFullYear();
@@ -19,15 +19,11 @@ export function useCreatineViewModel() {
   const todayStr = localDateStr(today);
 
   const [entries, setEntries] = useState<CreatineEntry[]>(() => loadEntries());
-  const [calendarOpen, setCalendarOpen] = useState(false);
   const [viewMonth, setViewMonth] = useState(
     () => new Date(today.getFullYear(), today.getMonth(), 1)
   );
   const [pickerDate, setPickerDate] = useState<string | null>(null);
-
-  const toggleCalendar = useCallback(() => {
-    setCalendarOpen(v => !v);
-  }, []);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const handleDayClick = useCallback(
     (dateStr: string) => {
@@ -36,7 +32,6 @@ export function useCreatineViewModel() {
       if (dateStr === todayStr) {
         saveEntry(dateStr, localTimeStr(new Date()));
         setEntries(loadEntries());
-        setCalendarOpen(false);
       } else {
         setPickerDate(dateStr);
       }
@@ -50,7 +45,6 @@ export function useCreatineViewModel() {
       saveEntry(pickerDate, time);
       setEntries(loadEntries());
       setPickerDate(null);
-      setCalendarOpen(false);
     },
     [pickerDate]
   );
@@ -65,12 +59,25 @@ export function useCreatineViewModel() {
     setViewMonth(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
   }, []);
 
+  const handleDeleteClick = useCallback((id: string) => {
+    setConfirmDeleteId(id);
+  }, []);
+
+  const confirmDelete = useCallback(() => {
+    if (!confirmDeleteId) return;
+    deleteEntry(confirmDeleteId);
+    setEntries(loadEntries());
+    setConfirmDeleteId(null);
+  }, [confirmDeleteId]);
+
+  const cancelDelete = useCallback(() => {
+    setConfirmDeleteId(null);
+  }, []);
+
   const loggedDates = new Set(entries.map(e => e.date));
 
   return {
     entries,
-    calendarOpen,
-    toggleCalendar,
     viewMonth,
     prevMonth,
     nextMonth,
@@ -80,5 +87,9 @@ export function useCreatineViewModel() {
     handleTimePick,
     closeTimePicker,
     loggedDates,
+    confirmDeleteId,
+    handleDeleteClick,
+    confirmDelete,
+    cancelDelete,
   };
 }

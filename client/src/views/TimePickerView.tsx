@@ -1,7 +1,7 @@
-const TIMES: string[] = Array.from({ length: 48 }, (_, i) => {
-  const h = Math.floor(i / 2);
-  const m = i % 2 === 0 ? '00' : '30';
-  return `${String(h).padStart(2, '0')}:${m}`;
+const TIMES: string[] = Array.from({ length: 1440 }, (_, i) => {
+  const h = Math.floor(i / 60);
+  const m = i % 60;
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 });
 
 function formatDate(dateStr: string): string {

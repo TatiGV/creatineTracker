@@ -21,3 +21,8 @@ export function saveEntry(date: string, time: string): CreatineEntry {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   return entry;
 }
+
+export function deleteEntry(id: string): void {
+  const entries = loadEntries().filter(e => e.id !== id);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
